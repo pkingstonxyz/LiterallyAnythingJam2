@@ -5,8 +5,8 @@ Game jam theme: Alone against all
 ## Game idea:
 
 A 2048 game where you can only move one tile. This tile can push tiles
-which, it always will if there's room to move/merge, or pull a tile towards 
-it if there's not. The goal is, as always, 2048.
+if there's room to move/merge, or pull a tile towards it. 
+The goal is, as always, 2048.
 
 A seal gyu-ing or neck extending
 
