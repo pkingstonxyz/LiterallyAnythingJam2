@@ -1,0 +1,81 @@
+# Twenty Fourty All
+
+Game jam theme: Alone against all
+
+## Game idea:
+
+A 2048 game where you can only move one tile. This tile can push tiles
+which, it always will if there's room to move/merge, or pull a tile towards 
+it if there's not. The goal is, as always, 2048.
+
+A seal gyu-ing or neck extending
+
+Arrow keys/wasd to move, click/right click to push
+
+### Old ideas
+
+2048 tower defense, merge tiles to get better towers (not one or all enough)
+
+## Parts
+
+### Grid
+
+Is: 5x5 (6x6?) grid that the player moves around on
+
+### Yo-chan (player), main tile
+
+Is: The player, the "main tile"
+
+Can:
+ - Move around the grid one space at a time (WASD/Arrows/HJKL)
+ - Pull an ice block towards her with a gyu (clicking)
+ - Push an ice block away from her with a nobite (right clicking)
+
+### Ice block
+
+Is: The main "tile"
+
+Can: 
+ - Slide around the grid in the direction it's moving
+ - When it hits a block of the same number, it merges into 
+ - When it hits a block, it stops moving and the other block starts moving
+
+### Tsuki-chan
+
+Is: An "enemy" in the game
+
+Can:
+ - Steal and a tile on the edge of the board.
+
+### Trainer
+
+Can:
+ - Throw fish onto the grid
+
+### Marine mammal rescue shoutout
+
+#### Stretch goals:
+
+ - [ ] Interactive tutorial
+ - [ ] Art & Animation of the trainer
+ - [ ] Art & Animation for each of the tile types
+ - [ ] Animatino on tile merge
+ - [ ] Trainer "gloves" (mouse cursor) as prize for beating the game
+
+## Timeline
+
+### Actual timeline
+
+[x] June 1: ideate, setup ide for python and pygame
+
+### Goal
+
+June 1: ideate, setup pygame
+June 2: yo-chan grid movement working
+June 3: ice block movement & merging
+June 4: trainer & gyu/nobite & Tsuki
+June 5: yo-chan art & animation system(gyu,nobite,idle,eyes follow mouse)
+June 6: tsuki-chan art/animation & (gyu,nobite,eyes follow mouse)
+June 7: Music & Sound Effects
+June 8: Menu & submission
+
