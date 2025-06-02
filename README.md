@@ -37,8 +37,7 @@ Is: The main "tile"
 
 Can: 
  - Slide around the grid in the direction it's moving
- - When it hits a block of the same number, it merges into 
- - When it hits a block, it stops moving and the other block starts moving
+ - When it hits a block of the same number, it merges into it
 
 ### Tsuki-chan
 
@@ -61,6 +60,8 @@ Can:
  - [ ] Art & Animation for each of the tile types
  - [ ] Animatino on tile merge
  - [ ] Trainer "gloves" (mouse cursor) as prize for beating the game
+ - [ ] Add kroshik and shlissik as a more difficult enemy
+ - [ ] Add Tsuki growing up and getting faster/better
 
 ## Timeline
 
