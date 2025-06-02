@@ -44,7 +44,7 @@ action_to_direction = {
 
 class YoChan(GameObject):
     TURN_DURATION = 0.100  # milliseconds
-    MOVE_DURATION = 0.150
+    MOVE_DURATION = 0.100
 
     def __init__(self, board):
         self.gridx = 2
@@ -131,3 +131,7 @@ class YoChan(GameObject):
     def draw(self, surface):
         pygame.draw.rect(surface, (255, 0, 0),
                          (self.pixelx, self.pixely, 50, 50))
+        pygame.draw.rect(surface, (0, 0, 0),
+                         (self.pixelx + (self.facing.value[0] * 20) + 25,
+                          self.pixely + (self.facing.value[1] * 20) + 25,
+                          5, 5))
