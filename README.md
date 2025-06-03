@@ -68,6 +68,7 @@ Can:
 ### Actual timeline
 
 [x] June 1: ideate, setup ide for python and pygame
+[x] June 2: yo-chan grid movement working
 
 ### Goal
 

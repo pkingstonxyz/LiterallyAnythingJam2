@@ -37,6 +37,7 @@ def get_scaled_rect(window_size):
 
 # Create the gameboard
 gameboard = Board()
+gameboard.add_fishcube(1, 1)
 
 # Create yochan
 yochan = YoChan(gameboard)
@@ -45,6 +46,8 @@ clock = pygame.time.Clock()
 delta_time = 0.1
 
 running = True
+
+print(gameboard.grid)
 
 while running:
     for event in pygame.event.get():
@@ -58,9 +61,14 @@ while running:
             if height < HEIGHT:
                 height = HEIGHT
             screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_SPACE:
+                gameboard.move_in_grid((1,1), (1,4))
+                gameboard.grid[4][1].move_to((1, 4), gameboard)
         yochan.handle_input(event)
 
     # Logical updates here
+    gameboard.update(delta_time)
     yochan.update(delta_time, gameboard)  # She can "see" the board
 
     # Draw graphics

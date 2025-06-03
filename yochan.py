@@ -47,6 +47,7 @@ class YoChan(GameObject):
     MOVE_DURATION = 0.100
 
     def __init__(self, board):
+        board.add_yochan(self, 2, 2)
         self.gridx = 2
         self.gridy = 2
         self.pixelx, self.pixely = board.get_pixel_coords(2, 2)
@@ -58,6 +59,7 @@ class YoChan(GameObject):
 
         self.turn_elapsed = 0  # in ms
         self.target_direction = Directions.LEFT
+
 
     def handle_input(self, event):
         action = self.action
@@ -93,8 +95,9 @@ class YoChan(GameObject):
                 self.next_direction = target_dir
                 self.time_elapsed = 0
                 self.state = YoStates.TURNING
-            elif board.check_can_move((self.gridx, self.gridy), (tx, ty)):
+            elif board.check_can_move((tx, ty)):
                 # Prepare to move
+                board.move_in_grid((self.gridx, self.gridy), (tx, ty))
                 self.gridx = tx
                 self.gridy = ty
                 self.move_origin = (self.pixelx, self.pixely)
