@@ -2,6 +2,7 @@
 import pygame
 
 from gameobject import GameObject
+from directions import Directions
 
 from yochan import YoChan
 from tile import Tile
@@ -62,6 +63,62 @@ class Board(GameObject):
         self.grid[fromy][fromx] = None
         return True
 
+    def push_from(self, direction, position):
+        # determine starting point for iteration
+        start = 0
+        step = 1
+        if direction == Directions.DOWN or direction == Directions.RIGHT:
+            step = -1
+            start = 4
+
+        ending_coord = position[0]
+        static_coord = position[1]
+        if direction == Directions.DOWN or direction == Directions.UP:
+            static_coord = position[0]
+            ending_coord = position[1]
+
+        compare = lambda x, y: x < y
+        if direction == Directions.UP or direction == Directions.LEFT:
+            compare = lambda x, y: x > y
+
+        # ---SLIDE---
+        furthest_empty = start
+        if direction == Directions.DOWN or direction == Directions.UP:
+            for i in range(start, ending_coord, step):
+                cell = self.grid[i][static_coord]
+                if cell and compare(i, furthest_empty):
+                    # If there's room to move
+                    self.move_in_grid((static_coord, i),
+                                      (static_coord, furthest_empty))
+                    cell.move_to((static_coord, furthest_empty), self)
+                    furthest_empty += step
+                elif cell:
+                    furthest_empty += step
+        elif direction == Directions.RIGHT or direction == Directions.LEFT:
+            for i in range(start, ending_coord, step):
+                cell = self.grid[static_coord][i]
+                if cell and compare(i, furthest_empty):
+                    # If there's room to move
+                    self.move_in_grid((i, static_coord),
+                                      (furthest_empty, static_coord))
+                    cell.move_to((furthest_empty, static_coord), self)
+                    furthest_empty += step
+                elif cell:
+                    furthest_empty += step
+        # --+MERGE+--
+        if direction == Directions.DOWN or direction == Directions.UP:
+            for i in range(start, ending_coord - step, step):
+                cell = self.grid[i][static_coord]
+                nextcell = self.grid[i+step][static_coord]
+                pass
+        elif direction == Directions.RIGHT or direction == Directions.LEFT:
+            for i in range(start, ending_coord - step, step):
+                cell = self.grid[static_coord][i]
+                nextcell = self.grid[static_coord][i+step]
+                pass
+
+        print(self.grid)
+
     def update(self, delta):
         for row in self.grid:
             for cell in row:
@@ -74,13 +131,15 @@ class Board(GameObject):
                          (self.gridx, self.gridy,
                           self.gridsize, self.gridsize))
 
-        # Draw little outlines & cells
+        # Draw little outlines
         for ridx, row in enumerate(self.grid):
             for cidx, cell in enumerate(row):
-                # Draw grid outline
                 cx, cy = self.get_pixel_coords(cidx, ridx)
                 pygame.draw.rect(surface, (230, 230, 255),
                                  (cx, cy,
                                   self.cellsize, self.cellsize))
+        # Draw actual cells
+        for ridx, row in enumerate(self.grid):
+            for cidx, cell in enumerate(row):
                 if cell and not isinstance(cell, YoChan):
                     cell.draw(surface, self)

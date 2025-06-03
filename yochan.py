@@ -1,5 +1,6 @@
 """Class for yo-chan"""
 from enum import Enum
+from directions import Directions
 import pygame
 from gameobject import GameObject
 
@@ -27,13 +28,6 @@ class InputActions(Enum):
     NONE = 7
 
 
-class Directions(Enum):
-    LEFT = (-1, 0)
-    RIGHT = (1, 0)
-    UP = (0, -1)
-    DOWN = (0, 1)
-
-
 action_to_direction = {
         InputActions.MOVE_UP: Directions.UP,
         InputActions.MOVE_LEFT: Directions.LEFT,
@@ -43,8 +37,9 @@ action_to_direction = {
 
 
 class YoChan(GameObject):
-    TURN_DURATION = 0.100  # milliseconds
+    TURN_DURATION = 0.100
     MOVE_DURATION = 0.100
+    NOBITE_DURATION = 0.200
 
     def __init__(self, board):
         board.add_yochan(self, 2, 2)
@@ -59,6 +54,8 @@ class YoChan(GameObject):
 
         self.turn_elapsed = 0  # in ms
         self.target_direction = Directions.LEFT
+
+        self.nobite_elapsed = 0
 
 
     def handle_input(self, event):
@@ -108,8 +105,10 @@ class YoChan(GameObject):
                 # Facing the right direction but blocked
                 self.state = YoStates.IDLE
                 self.action = InputActions.NONE
-        if self.state == YoStates.TURNING:
-            self.turn_elapsed += delta
+        elif self.state == YoStates.IDLE and self.action == InputActions.NOBITE:
+            board.push_from(self.facing, (self.gridx, self.gridy))
+            self.state = YoStates.NOBITEING
+            self.nobite_elapsed = 0
 
         # HANDLE DEPENDING ON STATE
         if self.state == YoStates.TURNING:
@@ -127,6 +126,14 @@ class YoChan(GameObject):
             self.pixelx = ox + (tx - ox) * progress
             self.pixely = oy + (ty - oy) * progress
 
+            if progress >= 1.0:
+                self.state = YoStates.IDLE
+                self.action = InputActions.NONE
+
+        elif self.state == YoStates.NOBITEING:
+            self.nobite_elapsed += delta
+            progress = min(self.nobite_elapsed / self.NOBITE_DURATION, 1.0)
+            # PUT SPRITE INTERPOLATION STUFF HERE?
             if progress >= 1.0:
                 self.state = YoStates.IDLE
                 self.action = InputActions.NONE

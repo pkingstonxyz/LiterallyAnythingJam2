@@ -38,6 +38,11 @@ def get_scaled_rect(window_size):
 # Create the gameboard
 gameboard = Board()
 gameboard.add_fishcube(1, 1)
+gameboard.add_fishcube(1, 2)
+gameboard.add_fishcube(1, 3)
+
+gameboard.add_fishcube(3, 1)
+gameboard.add_fishcube(3, 3)
 
 # Create yochan
 yochan = YoChan(gameboard)
@@ -62,9 +67,7 @@ while running:
                 height = HEIGHT
             screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_SPACE:
-                gameboard.move_in_grid((1,1), (1,4))
-                gameboard.grid[4][1].move_to((1, 4), gameboard)
+            pass
         yochan.handle_input(event)
 
     # Logical updates here
