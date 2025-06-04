@@ -9,23 +9,24 @@ from tile import Tile
 
 
 class Board(GameObject):
-    def __init__(self):
+    def __init__(self, scorecard):
+        self.scorecard = scorecard
+
         self.gridsize = int(GameObject.HEIGHT * 0.75)
         self.gridx = (GameObject.WIDTH - self.gridsize)//2
         self.gridy = (GameObject.HEIGHT - self.gridsize)//2
-        self.cellsize = self.gridsize // 5.6
-        self.celloffset = (self.gridsize - (self.cellsize * 5))//6
-        self.grid = [[None, None, None, None, None],
-                     [None, None, None, None, None],
-                     [None, None, None, None, None],
-                     [None, None, None, None, None],
-                     [None, None, None, None, None]]
+        self.cellcount = GameObject.CELLCOUNT
+        self.cellsize = self.gridsize // (self.cellcount + 0.5)
+        self.celloffset = (self.gridsize - (self.cellsize * self.cellcount))//(self.cellcount+1)
+        self.grid = [[None for _ in range(self.cellcount)]
+                     for _ in range(self.cellcount)]
 
     def check_can_move(self, tocoords):
         """Checks if it's possible for a tile to move from from to to"""
         tox, toy = tocoords
 
-        if tox > 4 or tox < 0 or toy > 4 or toy < 0:
+        if tox > (self.cellcount-1) or tox < 0 or \
+           toy > (self.cellcount-1) or toy < 0:
             return False
 
         return False if self.grid[toy][tox] else True
@@ -39,7 +40,7 @@ class Board(GameObject):
 
     def check_if_empty(self, x, y):
         """Checks if the cell is empty(really, viable)"""
-        if x > 4 or x < 0 or y > 4 or y < 0:
+        if x > (self.cellcount-1) or x < 0 or y > (self.cellcount-1) or y < 0:
             return False  # not empty
 
         return False if self.grid[y][x] else True
@@ -52,10 +53,10 @@ class Board(GameObject):
         """Adds a fish to the specified coordinate"""
         x, y = coords
         if self.check_if_empty(x, y):
-            self.grid[y][x] = Tile(x, y, 2, self)
+            self.grid[y][x] = Tile(x, y,  self)
 
     def in_bounds(self, x, y):
-        return 0 <= x < 5 and 0 <= y < 5
+        return 0 <= x < self.cellcount and 0 <= y < self.cellcount
 
     def move_in_grid(self, current, target):
         print("Moving in grid")
@@ -84,18 +85,18 @@ class Board(GameObject):
             tileidxes = [(x, i) for i in range(0, y)]
             pass
         elif direction == Directions.DOWN:
-            if y == 4:
+            if y == (self.cellcount-1):
                 return []
-            tileidxes = [(x, i) for i in range(4, y, -1)]
+            tileidxes = [(x, i) for i in range((self.cellcount-1), y, -1)]
         elif direction == Directions.LEFT:
             if x == 0:
                 return []
             tileidxes = [(i, y) for i in range(0, x)]
             pass
         elif direction == Directions.RIGHT:
-            if x == 4:
+            if x == (self.cellcount-1):
                 return []
-            tileidxes = [(i, y) for i in range(4, x, -1)]
+            tileidxes = [(i, y) for i in range((self.cellcount-1), x, -1)]
 
         return [self.grid[y][x] for (x, y) in tileidxes if self.grid[y][x]]
 
@@ -138,6 +139,7 @@ class Board(GameObject):
         # Merge the current tile up to target cell, and manage ghost cell
         print(f"\tPerforming merge up on {target}")
         current.merge_up(target, other, self)
+        self.scorecard.score_tile(current)
         print(self)
         print("---Done merging---")
 
@@ -203,9 +205,6 @@ class Board(GameObject):
                 plan.append(('merge', reverse_direction, current, tiles[i+1]))
                 skip = True  # Don't double merge
             else:
-                # tx, ty = self.get_target_position(current, direction)
-                # Check if it's able to move
-                # if (tx, ty) != (current.gridx, current.gridy):
                 plan.append(('move', reverse_direction, current, None))
 
         print(plan)

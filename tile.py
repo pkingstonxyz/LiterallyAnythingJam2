@@ -13,18 +13,20 @@ class TileStates(Enum):
 
 
 class Tile(GameObject):
-    BASE_MOVE_DURATION = 0.400
-    MERGE_DURATION = 0.150
-    ADD_DURATION = 0.200
+    BASE_MOVE_DURATION = 0.200
+    MERGE_DURATION = 0.100
+    ADD_DURATION = 0.100
 
-    def __init__(self, x, y, val, board):
+    ODDS_OF_FOUR = 0.5
+
+    def __init__(self, x, y, board):
         self.gridx = x
         self.gridy = y
 
         self.pixelx, self.pixely = board.get_pixel_coords(
                 random.randint(-2, 6), random.randint(-2, 6))
 
-        self.value = val
+        self.value = 2 if Tile.ODDS_OF_FOUR < random.random() else 4
 
         self.move_duration = 0
         self.move_origin = (self.pixelx, self.pixely)  # for initial throw
@@ -174,17 +176,25 @@ class Tile(GameObject):
             self.ghost_tile.draw(surface, board)
         size = int((board.cellsize - 20) * self.scale)
         offset = (board.cellsize - size) // 2
-        colors = {2: (150, 200, 0, 255),
-                  4: (50, 200, 150, 255),
-                  8: (0, 150, 255, 255),
-                  16: (75, 75, 255, 255)}
+        colors = {2:  (245, 252, 226, 255),
+                  4:  (255, 249, 169, 255),
+                  8:  (255, 222, 117, 255),
+                  16: (255, 190,  94, 255),
+                  32: (255, 161, 107),
+                  64: (255, 134, 114),
+                  128: (255, 110, 150),
+                  256: (255, 108, 255),
+                  512: (196, 101, 255),
+                  1024: (123, 86, 255),
+                  2048: (0, 0, 0)}
 
         # Draw the "target"
         if self.state == TileStates.ADDING:
-            pygame.draw.rect(surface, (200, 200, 200, 50),
-                             (self.pixelx + offset, self.pixely + offset,
-                              size,
-                              size))
+            pygame.draw.rect(surface, (50, 50, 50, 200),
+                             (self.move_target[0] + 10,
+                              self.move_target[1] + 10,
+                              board.cellsize - 20,
+                              board.cellsize - 20))
         # Draw the main tile
         pygame.draw.rect(surface, colors[self.value],
                          (self.pixelx + offset, self.pixely + offset,

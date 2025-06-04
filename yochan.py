@@ -37,10 +37,10 @@ action_to_direction = {
 
 
 class YoChan(GameObject):
-    TURN_DURATION = 0.100
-    MOVE_DURATION = 0.150
-    NOBITE_DURATION = 0.200
-    GYU_DURATION = 0.200
+    TURN_DURATION = (0.0166)*3    # 3 frames
+    MOVE_DURATION = (0.0166)*5    # 5 frames
+    NOBITE_DURATION = (0.0166)*5  # frames
+    GYU_DURATION = NOBITE_DURATION
 
     def __init__(self, board):
         board.add_yochan(self, 2, 2)
@@ -68,15 +68,25 @@ class YoChan(GameObject):
         # ONLY able to take an action when idling
         if self.state != YoStates.IDLE:
             return
+        leftkeys = (pygame.K_LEFT, pygame.K_a, pygame.K_h)
+        rightkeys = (pygame.K_RIGHT, pygame.K_d, pygame.K_l)
+        upkeys = (pygame.K_UP, pygame.K_w, pygame.K_k)
+        downkeys = (pygame.K_DOWN, pygame.K_s, pygame.K_j)
+        nobitekeys = (pygame.K_z, pygame.K_COMMA, pygame.K_u)
+        gyukeys = (pygame.K_x, pygame.K_PERIOD, pygame.K_i)
         if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT or event.key == pygame.K_a:
+            if event.key in leftkeys:
                 action = InputActions.MOVE_LEFT
-            elif event.key == pygame.K_RIGHT or event.key == pygame.K_d:
+            elif event.key in rightkeys:
                 action = InputActions.MOVE_RIGHT
-            elif event.key == pygame.K_UP or event.key == pygame.K_w:
+            elif event.key in upkeys:
                 action = InputActions.MOVE_UP
-            elif event.key == pygame.K_DOWN or event.key == pygame.K_s:
+            elif event.key in downkeys:
                 action = InputActions.MOVE_DOWN
+            elif event.key in nobitekeys:
+                action = InputActions.NOBITE
+            elif event.key in gyukeys:
+                action = InputActions.GYU
         elif event.type == pygame.MOUSEBUTTONDOWN:
             if event.button == 1:  # LEFT CLICK
                 action = InputActions.NOBITE

@@ -40,12 +40,16 @@ class Tsuki(GameObject):
         return random.uniform(Tsuki.MIN_CAN_POUNCE, Tsuki.MAX_CAN_POUNCE)
 
     def get_pouncable_squares(self, board):
-        column_edges = ((0, 1), (0, 2), (0, 3), (4, 1), (4, 2), (4, 3))
+        column_edges = []
+        for i in range(1, GameObject.CELLCOUNT):
+            column_edges.append((0, i))
+            column_edges.append((GameObject.CELLCOUNT-1, i))
+        print(column_edges)
         pouncable = []
         for cell in board.grid[0]:
             if cell and not isinstance(cell, YoChan):
                 pouncable.append(cell)
-        for cell in board.grid[4]:
+        for cell in board.grid[GameObject.CELLCOUNT-1]:
             if cell and not isinstance(cell, YoChan):
                 pouncable.append(cell)
         for x, y in column_edges:
@@ -75,16 +79,16 @@ class Tsuki(GameObject):
                     self.gridy = -1
                     self.gridx = self.pouncing_square.gridx
                     self.facing = Directions.DOWN
-                elif self.pouncing_square.gridy == 4:
-                    self.gridy = 5
+                elif self.pouncing_square.gridy == GameObject.CELLCOUNT-1:
+                    self.gridy = GameObject.CELLCOUNT
                     self.gridx = self.pouncing_square.gridx
                     self.facing = Directions.UP
                 elif self.pouncing_square.gridx == 0:
                     self.gridx = -1
                     self.gridy = self.pouncing_square.gridy
                     self.facing = Directions.RIGHT
-                elif self.pouncing_square.gridx == 4:
-                    self.gridx = 5
+                elif self.pouncing_square.gridx == GameObject.CELLCOUNT-1:
+                    self.gridx = GameObject.CELLCOUNT
                     self.gridy = self.pouncing_square.gridy
                     self.facing = Directions.LEFT
                 self.pixelx, self.pixely = board.get_pixel_coords(self.gridx,

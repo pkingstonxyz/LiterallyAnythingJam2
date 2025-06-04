@@ -5,6 +5,8 @@ from board import Board
 from yochan import YoChan
 from tsuki import Tsuki
 from trainer import Trainer
+from timer import Timer
+from scorecard import ScoreCard
 
 pygame.init()
 
@@ -37,25 +39,14 @@ def get_scaled_rect(window_size):
         return pygame.Rect(0, y_offset, win_width, scaled_height)
 
 
-# Create the gameboard
-gameboard = Board()
-gameboard.add_fish((1, 1))
-gameboard.add_fish((1, 2))
-gameboard.add_fish((1, 3))
-gameboard.add_fish((1, 4))
+# UI elements
+timer = Timer()
+scorecard = ScoreCard()
 
-gameboard.add_fish((3, 1))
-gameboard.add_fish((3, 2))
-gameboard.add_fish((3, 3))
-gameboard.add_fish((3, 4))
-
-# Create yochan
+# Game Elements
+gameboard = Board(scorecard)
 yochan = YoChan(gameboard)
-
-# Create tsuki
 tsuki = Tsuki()
-
-# Create trainer
 trainer = Trainer()
 
 clock = pygame.time.Clock()
@@ -80,6 +71,7 @@ while running:
         yochan.handle_input(event)
 
     # Logical updates here
+    timer.update(delta_time)
     gameboard.update(delta_time)
     tsuki.update(delta_time, gameboard)  # She can see the board
     yochan.update(delta_time, gameboard)  # Her too
@@ -90,6 +82,10 @@ while running:
     tsuki.draw(render_surface)
     gameboard.draw(render_surface)
     yochan.draw(render_surface)
+
+    # Draw UI
+    scorecard.draw(render_surface)
+    timer.draw(render_surface)
 
     # Scale and draw render_surface properly
     screen.fill((0, 0, 0))

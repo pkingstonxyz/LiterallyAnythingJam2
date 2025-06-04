@@ -67,10 +67,14 @@ Can:
 
 ### Actual timeline
 
-[x] June 1: ideate, setup ide for python and pygame
-[x] June 2: yo-chan grid movement working, ice block movement, nobite
-[x] June 3: revamped ice block movement
-[x] June 4: ice block merging, gyu, tsuki, trainer
+ - [x] June 1: ideate, setup ide for python and pygame
+ - [x] June 2: yo-chan grid movement working, ice block movement, nobite
+ - [x] June 3: revamped ice block movement
+ - [x] June 4: ice block merging, gyu, tsuki, trainer, timer, scoring
+ - [ ] June 5:
+ - [ ] June 6:
+ - [ ] June 7:
+ - [ ] June 8:
 
 ### Goal
 
@@ -78,8 +82,8 @@ June 1: ideate, setup pygame
 June 2: yo-chan grid movement working
 June 3: ice block movement & merging
 June 4: trainer & gyu/nobite & Tsuki
-June 5: yo-chan art & animation system(gyu,nobite,idle,eyes follow mouse)
-June 6: tsuki-chan art/animation & (gyu,nobite,eyes follow mouse)
+June 5: yo-chan art & animation system (sprites)
+June 6: tsuki-chan art/animation & fish art/animation
 June 7: Music & Sound Effects & Menu 
 June 8: Packaging & Submission
 

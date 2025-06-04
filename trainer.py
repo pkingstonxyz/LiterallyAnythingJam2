@@ -5,12 +5,10 @@ from gameobject import GameObject
 
 class Trainer(GameObject):
     """The trainer class that handles:
-        - [ ] Tile adding
-        - [ ] The timer
-        - [ ] Managing win-loss"""
+        - [x] Tile adding"""
 
-    MIN_CAN_ADD = 3
-    MAX_CAN_ADD = 5
+    MIN_CAN_ADD = 1
+    MAX_CAN_ADD = 3
 
     def __init__(self):
         self.time_since_add = 0
@@ -23,10 +21,6 @@ class Trainer(GameObject):
         return random.uniform(Trainer.MIN_CAN_ADD, Trainer.MAX_CAN_ADD)
 
     def update(self, delta, board):
-        # Increment timer
-
-        # Check if we've lost
-
         # Add tile at set interval
         self.time_since_add += delta
         if self.time_since_add >= self.add_threshold:

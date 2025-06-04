@@ -5,6 +5,7 @@ class GameObject:
     __GameObjectID = 0
     WIDTH = None
     HEIGHT = None
+    CELLCOUNT = 6
 
     def __init__(self):
         self.objid = GameObject.__GameObjectID
