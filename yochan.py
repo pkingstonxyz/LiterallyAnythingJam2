@@ -38,7 +38,7 @@ action_to_direction = {
 
 class YoChan(GameObject):
     TURN_DURATION = 0.100
-    MOVE_DURATION = 0.100
+    MOVE_DURATION = 0.150
     NOBITE_DURATION = 0.200
 
     def __init__(self, board):
@@ -48,7 +48,7 @@ class YoChan(GameObject):
         self.pixelx, self.pixely = board.get_pixel_coords(2, 2)
         self.move_elapsed = 0
 
-        self.state = YoStates.IDLE
+        self.state = YoStates.NOBITEING
         self.facing = Directions.LEFT
         self.action = InputActions.NONE
 

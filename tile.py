@@ -12,7 +12,7 @@ class TileStates(Enum):
 
 class Tile(GameObject):
     BASE_MOVE_DURATION = 0.400
-    MERGE_ANIMATION_DURATION = 0.1
+    MERGE_DURATION = 0.150
 
     def __init__(self, x, y, val, board):
         self.gridx = x
@@ -29,14 +29,24 @@ class Tile(GameObject):
 
         self.state = TileStates.STILL
 
+        self.scale = 1.0
+        self.merge_elapsed = 0
+        self.has_merged_this_round = False
+
     def move_to(self, destination, board):
         # ASSUMES THE TILE IS IN THE RIGHT LOGICAL PLACE
         # Gate to ensure tile is still
-        if self.state != TileStates.STILL:
+        if self.state != TileStates.STILL and self.state != TileStates.MERGING:
             return
 
         tx, ty = destination
         distance = max(abs(self.gridx - tx), abs(self.gridy - ty))
+
+        # Gate if we don't need to move
+        if distance == 0:
+            self.state = TileStates.STILL
+            return
+
         self.gridx = tx
         self.gridy = ty
         self.move_origin = (self.pixelx, self.pixely)
@@ -44,6 +54,9 @@ class Tile(GameObject):
         self.move_elapsed = 0
         self.move_duration = (Tile.BASE_MOVE_DURATION/5) * distance
         self.state = TileStates.MOVING
+
+    def can_merge(self, other):
+        return other and self.value == other.value
 
     def update(self, delta):
         if self.state == TileStates.MOVING:
@@ -60,16 +73,16 @@ class Tile(GameObject):
                 self.state = TileStates.STILL
 
     def draw(self, surface, board):  # has to be drawn on the board
-        scale = 1.0
-        size = int((board.cellsize - 20) * scale)
+        size = int((board.cellsize - 20) * self.scale)
         offset = (board.cellsize - size) // 2
         colors = {2: (150, 200, 0),
-                  4: (150, 200, 100),
-                  8: (100, 200, 150)}
+                  4: (50, 200, 150),
+                  8: (0, 150, 255),
+                  16: (75, 75, 255)}
         pygame.draw.rect(surface, colors[self.value],
                          (self.pixelx + offset, self.pixely + offset,
                           size,
                           size))
 
     def __repr__(self):
-        return f"{self.value}"
+        return f"({self.gridx},{self.gridy}):{self.value}"

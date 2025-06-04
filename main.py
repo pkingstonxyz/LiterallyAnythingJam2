@@ -40,9 +40,12 @@ gameboard = Board()
 gameboard.add_fishcube(1, 1)
 gameboard.add_fishcube(1, 2)
 gameboard.add_fishcube(1, 3)
+gameboard.add_fishcube(1, 4)
 
 gameboard.add_fishcube(3, 1)
+gameboard.add_fishcube(3, 2)
 gameboard.add_fishcube(3, 3)
+gameboard.add_fishcube(3, 4)
 
 # Create yochan
 yochan = YoChan(gameboard)

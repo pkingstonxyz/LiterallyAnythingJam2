@@ -68,7 +68,8 @@ Can:
 ### Actual timeline
 
 [x] June 1: ideate, setup ide for python and pygame
-[ ] June 2: yo-chan grid movement working, ice block movement
+[x] June 2: yo-chan grid movement working, ice block movement, nobite
+[x] June 3: revamped ice block movement
 
 ### Goal
 

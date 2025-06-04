@@ -53,71 +53,88 @@ class Board(GameObject):
         if self.check_if_empty(x, y):
             self.grid[y][x] = Tile(x, y, 2, self)
 
-    def move_in_grid(self, fromcoords, tocoords):
-        """updates the logical grid, does not handle any movement or tiles"""
-        fromx, fromy = fromcoords
-        x, y = tocoords
-        if x > 4 or x < 0 or y > 4 or y < 0:
+    def in_bounds(self, x, y):
+        return 0 <= x < 5 and 0 <= y < 5
+
+    def move_in_grid(self, current, target):
+        print(f"Current: {current}")
+        print(f"Target: {target}")
+        cx, cy = current
+        tx, ty = target
+        if not self.in_bounds(cx, cy) or not self.in_bounds(tx, ty):
             return False
-        self.grid[y][x] = self.grid[fromy][fromx]
-        self.grid[fromy][fromx] = None
-        return True
+        self.grid[ty][tx] = self.grid[cy][cx]
+        self.grid[cy][cx] = None
+
+    def get_affected_tiles(self, direction, position):
+        x, y = position
+        if direction == Directions.UP:
+            if y == 0:
+                return []
+            tileidxes = [(x, i) for i in range(0, y)]
+            pass
+        elif direction == Directions.DOWN:
+            if y == 4:
+                return []
+            tileidxes = [(x, i) for i in range(4, y, -1)]
+        elif direction == Directions.LEFT:
+            if x == 0:
+                return []
+            tileidxes = [(i, y) for i in range(0, x)]
+            pass
+        elif direction == Directions.RIGHT:
+            if x == 4:
+                return []
+            tileidxes = [(i, y) for i in range(4, x, -1)]
+
+        return [self.grid[y][x] for (x, y) in tileidxes if self.grid[y][x]]
+
+
+    def get_target_position(self, tile, direction):
+        x, y = tile.gridx, tile.gridy
+        dx, dy = direction.value
+
+        next_x, next_y = x + dx, y + dy
+        while self.in_bounds(next_x, next_y) and not self.grid[next_y][next_x]:
+            x, y = next_x, next_y
+            next_x += dx
+            next_y += dy
+
+        return (x, y)
+
+    def move_tile(self, task):
+        name, direction, current, target = task
+        self.move_in_grid((current.gridx, current.gridy), target)
+        current.move_to(target, self)
+        return
 
     def push_from(self, direction, position):
-        # determine starting point for iteration
-        start = 0
-        step = 1
-        if direction == Directions.DOWN or direction == Directions.RIGHT:
-            step = -1
-            start = 4
+        print(f"Pushing {direction} from {position}")
+        tiles = self.get_affected_tiles(direction, position)
+        for tile in tiles:
+            tile.has_merged_this_round = False  # set the merging flag
 
-        ending_coord = position[0]
-        static_coord = position[1]
-        if direction == Directions.DOWN or direction == Directions.UP:
-            static_coord = position[0]
-            ending_coord = position[1]
+        skip = False
+        plan = []
 
-        compare = lambda x, y: x < y
-        if direction == Directions.UP or direction == Directions.LEFT:
-            compare = lambda x, y: x > y
+        for i in range(len(tiles)):
+            if skip:
+                skip = False
+                continue
+            current = tiles[i]
+            if i + 1 < len(tiles) and current.value == tiles[i+1].value:
+                plan.append(('merge', direction, current, tiles[i+1]))
+                skip = True  # Don't double merge
+            else:
+                tx, ty = self.get_target_position(current, direction)
+                # Check if it's able to move
+                if (tx, ty) != (current.gridx, current.gridy):
+                    plan.append(('move', direction, current, (tx, ty)))
 
-        # ---SLIDE---
-        furthest_empty = start
-        if direction == Directions.DOWN or direction == Directions.UP:
-            for i in range(start, ending_coord, step):
-                cell = self.grid[i][static_coord]
-                if cell and compare(i, furthest_empty):
-                    # If there's room to move
-                    self.move_in_grid((static_coord, i),
-                                      (static_coord, furthest_empty))
-                    cell.move_to((static_coord, furthest_empty), self)
-                    furthest_empty += step
-                elif cell:
-                    furthest_empty += step
-        elif direction == Directions.RIGHT or direction == Directions.LEFT:
-            for i in range(start, ending_coord, step):
-                cell = self.grid[static_coord][i]
-                if cell and compare(i, furthest_empty):
-                    # If there's room to move
-                    self.move_in_grid((i, static_coord),
-                                      (furthest_empty, static_coord))
-                    cell.move_to((furthest_empty, static_coord), self)
-                    furthest_empty += step
-                elif cell:
-                    furthest_empty += step
-        # --+MERGE+--
-        if direction == Directions.DOWN or direction == Directions.UP:
-            for i in range(start, ending_coord - step, step):
-                cell = self.grid[i][static_coord]
-                nextcell = self.grid[i+step][static_coord]
-                pass
-        elif direction == Directions.RIGHT or direction == Directions.LEFT:
-            for i in range(start, ending_coord - step, step):
-                cell = self.grid[static_coord][i]
-                nextcell = self.grid[static_coord][i+step]
-                pass
-
-        print(self.grid)
+        print(plan)
+        for task in plan:
+            if task[0] == 'move':
+                self.move_tile(task)
 
     def update(self, delta):
         for row in self.grid:
