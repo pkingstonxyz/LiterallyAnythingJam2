@@ -145,3 +145,6 @@ class YoChan(GameObject):
                          (self.pixelx + (self.facing.value[0] * 20) + 25,
                           self.pixely + (self.facing.value[1] * 20) + 25,
                           5, 5))
+
+    def __repr__(self):
+        return "yo"

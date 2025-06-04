@@ -55,8 +55,6 @@ delta_time = 0.1
 
 running = True
 
-print(gameboard.grid)
-
 while running:
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
