@@ -3,6 +3,7 @@ import pygame
 from gameobject import GameObject
 from board import Board
 from yochan import YoChan
+from tsuki import Tsuki
 
 pygame.init()
 
@@ -50,6 +51,9 @@ gameboard.add_fishcube(3, 4)
 # Create yochan
 yochan = YoChan(gameboard)
 
+# Create tsuki
+tsuki = Tsuki()
+
 clock = pygame.time.Clock()
 delta_time = 0.1
 
@@ -73,10 +77,12 @@ while running:
 
     # Logical updates here
     gameboard.update(delta_time)
-    yochan.update(delta_time, gameboard)  # She can "see" the board
+    tsuki.update(delta_time, gameboard)  # She can see the board
+    yochan.update(delta_time, gameboard)  # Her too
 
     # Draw graphics
     render_surface.fill((0, 0, 64))
+    tsuki.draw(render_surface)
     gameboard.draw(render_surface)
     yochan.draw(render_surface)
 

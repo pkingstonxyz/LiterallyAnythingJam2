@@ -40,6 +40,7 @@ class YoChan(GameObject):
     TURN_DURATION = 0.100
     MOVE_DURATION = 0.150
     NOBITE_DURATION = 0.200
+    GYU_DURATION = 0.200
 
     def __init__(self, board):
         board.add_yochan(self, 2, 2)
@@ -57,6 +58,10 @@ class YoChan(GameObject):
 
         self.nobite_elapsed = 0
 
+        self.gyu_elapsed = 0
+
+    def check_is_idling(self):
+        return self.state == YoStates.IDLE
 
     def handle_input(self, event):
         action = self.action
@@ -109,6 +114,10 @@ class YoChan(GameObject):
             board.push_from(self.facing, (self.gridx, self.gridy))
             self.state = YoStates.NOBITEING
             self.nobite_elapsed = 0
+        elif self.state == YoStates.IDLE and self.action == InputActions.GYU:
+            board.pull_from(self.facing, (self.gridx, self.gridy))
+            self.state = YoStates.GYUING
+            self.gyu_elapsed = 0
 
         # HANDLE DEPENDING ON STATE
         if self.state == YoStates.TURNING:
@@ -138,8 +147,16 @@ class YoChan(GameObject):
                 self.state = YoStates.IDLE
                 self.action = InputActions.NONE
 
+        elif self.state == YoStates.GYUING:
+            self.gyu_elapsed += delta
+            progress = min(self.gyu_elapsed / self.GYU_DURATION, 1.0)
+
+            if progress >= 1.0:
+                self.state = YoStates.IDLE
+                self.action = InputActions.NONE
+
     def draw(self, surface):
-        pygame.draw.rect(surface, (255, 0, 0),
+        pygame.draw.rect(surface, (0, 255, 0),
                          (self.pixelx, self.pixely, 50, 50))
         pygame.draw.rect(surface, (0, 0, 0),
                          (self.pixelx + (self.facing.value[0] * 20) + 25,

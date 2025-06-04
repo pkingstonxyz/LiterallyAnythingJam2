@@ -141,11 +141,14 @@ class Board(GameObject):
         print("---Done merging---")
 
     def push_from(self, direction, position):
+        # Gate so that we only do this if all the tiles are still
+        for row in self.grid:
+            for tile in row:
+                if tile and not tile.check_is_idling():
+                    return
+
         print(f"Pushing {direction} from {position}")
         tiles = self.get_affected_tiles(direction, position)
-        for tile in tiles:
-            tile.has_merged_this_round = False  # set the merging flag
-
         skip = False
         plan = []
 
@@ -162,6 +165,49 @@ class Board(GameObject):
                 # Check if it's able to move
                 # if (tx, ty) != (current.gridx, current.gridy):
                 plan.append(('move', direction, current, None))
+
+        for task in plan:
+            if task[0] == 'move':
+                self.move_tile(task)
+            elif task[0] == 'merge':
+                self.merge_tiles(task)
+
+    def pull_from(self, direction, position):
+        # Gate so that we only do this if all the tiles are still
+        for row in self.grid:
+            for tile in row:
+                if tile and not tile.check_is_idling():
+                    return
+        print(f"Pulling {direction} from {position}")
+        direction_map = {
+                Directions.UP: Directions.DOWN,
+                Directions.DOWN: Directions.UP,
+                Directions.LEFT: Directions.RIGHT,
+                Directions.RIGHT: Directions.LEFT
+                }
+        reverse_direction = direction_map[direction]
+        tiles = self.get_affected_tiles(direction, position)
+        tiles = list(reversed(tiles))
+        print(tiles)
+
+        skip = False
+        plan = []
+
+        for i in range(len(tiles)):
+            if skip:
+                skip = False
+                continue
+            current = tiles[i]
+            if i + 1 < len(tiles) and current.value == tiles[i+1].value:
+                plan.append(('merge', reverse_direction, current, tiles[i+1]))
+                skip = True  # Don't double merge
+            else:
+                # tx, ty = self.get_target_position(current, direction)
+                # Check if it's able to move
+                # if (tx, ty) != (current.gridx, current.gridy):
+                plan.append(('move', reverse_direction, current, None))
+
+        print(plan)
 
         for task in plan:
             if task[0] == 'move':

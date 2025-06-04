@@ -33,6 +33,9 @@ class Tile(GameObject):
         self.merge_elapsed = 0
         self.ghost_tile = None
 
+    def check_is_idling(self):
+        return self.state == TileStates.STILL
+
     def move_to(self, target, board):
         # ASSUMES THE TILE IS IN THE RIGHT LOGICAL PLACE
         # Gate to ensure tile is still
