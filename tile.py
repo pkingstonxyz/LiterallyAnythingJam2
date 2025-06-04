@@ -1,5 +1,6 @@
 """The class for a tile in the game"""
 from enum import Enum
+import random
 import pygame
 from gameobject import GameObject
 
@@ -7,27 +8,32 @@ from gameobject import GameObject
 class TileStates(Enum):
     STILL = 1,
     MOVING = 2,
-    MERGING = 3
+    MERGING = 3,
+    ADDING = 4
 
 
 class Tile(GameObject):
     BASE_MOVE_DURATION = 0.400
     MERGE_DURATION = 0.150
+    ADD_DURATION = 0.200
 
     def __init__(self, x, y, val, board):
         self.gridx = x
         self.gridy = y
 
-        self.pixelx, self.pixely = board.get_pixel_coords(x, y)
+        self.pixelx, self.pixely = board.get_pixel_coords(
+                random.randint(-2, 6), random.randint(-2, 6))
 
         self.value = val
 
         self.move_duration = 0
-        self.move_origin = 0
-        self.move_target = 0
+        self.move_origin = (self.pixelx, self.pixely)  # for initial throw
+        self.move_target = board.get_pixel_coords(x, y)  # for initial throw
         self.move_elapsed = 0
 
-        self.state = TileStates.STILL
+        self.state = TileStates.ADDING
+
+        self.add_elapsed = 0
 
         self.scale = 1.0
         self.merge_elapsed = 0
@@ -97,7 +103,25 @@ class Tile(GameObject):
     def scale_tween_function(self, progress):
         return progress * (-1 * progress) * (progress * 2.5) * (progress - 1)
 
+    def throw_tween_function(self, progress):
+        """A quadratic to make it look like the tile was tossed"""
+        return -2 * progress * (progress - 1)
+
     def update(self, delta):
+        if self.state == TileStates.ADDING:
+            self.add_elapsed += delta
+            progress = min(self.add_elapsed / Tile.ADD_DURATION, 1.0)
+            ox, oy = self.move_origin
+            tx, ty = self.move_target
+            self.pixelx = ox + (tx - ox) * progress
+            self.pixely = oy + (ty - oy) * progress
+
+            self.scale = 1 + self.throw_tween_function(progress)
+            if progress >= 1.0:
+                self.pixelx = tx
+                self.pixely = ty
+                self.state = TileStates.STILL
+
         if self.state == TileStates.MOVING:
             self.move_elapsed += delta
             progress = min(self.move_elapsed / self.move_duration, 1.0)
@@ -150,10 +174,18 @@ class Tile(GameObject):
             self.ghost_tile.draw(surface, board)
         size = int((board.cellsize - 20) * self.scale)
         offset = (board.cellsize - size) // 2
-        colors = {2: (150, 200, 0),
-                  4: (50, 200, 150),
-                  8: (0, 150, 255),
-                  16: (75, 75, 255)}
+        colors = {2: (150, 200, 0, 255),
+                  4: (50, 200, 150, 255),
+                  8: (0, 150, 255, 255),
+                  16: (75, 75, 255, 255)}
+
+        # Draw the "target"
+        if self.state == TileStates.ADDING:
+            pygame.draw.rect(surface, (200, 200, 200, 50),
+                             (self.pixelx + offset, self.pixely + offset,
+                              size,
+                              size))
+        # Draw the main tile
         pygame.draw.rect(surface, colors[self.value],
                          (self.pixelx + offset, self.pixely + offset,
                           size,

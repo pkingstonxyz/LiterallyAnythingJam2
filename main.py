@@ -4,6 +4,7 @@ from gameobject import GameObject
 from board import Board
 from yochan import YoChan
 from tsuki import Tsuki
+from trainer import Trainer
 
 pygame.init()
 
@@ -38,21 +39,24 @@ def get_scaled_rect(window_size):
 
 # Create the gameboard
 gameboard = Board()
-gameboard.add_fishcube(1, 1)
-gameboard.add_fishcube(1, 2)
-gameboard.add_fishcube(1, 3)
-gameboard.add_fishcube(1, 4)
+gameboard.add_fish((1, 1))
+gameboard.add_fish((1, 2))
+gameboard.add_fish((1, 3))
+gameboard.add_fish((1, 4))
 
-gameboard.add_fishcube(3, 1)
-gameboard.add_fishcube(3, 2)
-gameboard.add_fishcube(3, 3)
-gameboard.add_fishcube(3, 4)
+gameboard.add_fish((3, 1))
+gameboard.add_fish((3, 2))
+gameboard.add_fish((3, 3))
+gameboard.add_fish((3, 4))
 
 # Create yochan
 yochan = YoChan(gameboard)
 
 # Create tsuki
 tsuki = Tsuki()
+
+# Create trainer
+trainer = Trainer()
 
 clock = pygame.time.Clock()
 delta_time = 0.1
@@ -79,6 +83,7 @@ while running:
     gameboard.update(delta_time)
     tsuki.update(delta_time, gameboard)  # She can see the board
     yochan.update(delta_time, gameboard)  # Her too
+    trainer.update(delta_time, gameboard)
 
     # Draw graphics
     render_surface.fill((0, 0, 64))

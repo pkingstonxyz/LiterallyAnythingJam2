@@ -48,8 +48,9 @@ class Board(GameObject):
         """Adds yo-chan to the grid"""
         self.grid[y][x] = yo
 
-    def add_fishcube(self, x, y):
-        """Adds a fishcube to the specified coordinate"""
+    def add_fish(self, coords):
+        """Adds a fish to the specified coordinate"""
+        x, y = coords
         if self.check_if_empty(x, y):
             self.grid[y][x] = Tile(x, y, 2, self)
 
