@@ -8,6 +8,8 @@ from trainer import Trainer
 from timer import Timer
 from scorecard import ScoreCard
 
+from background import Background
+
 pygame.init()
 
 WIDTH = 1024
@@ -39,6 +41,8 @@ def get_scaled_rect(window_size):
         y_offset = (win_height - scaled_height) // 2
         return pygame.Rect(0, y_offset, win_width, scaled_height)
 
+# Background
+background = Background()
 
 # UI elements
 timer = Timer()
@@ -54,6 +58,7 @@ clock = pygame.time.Clock()
 delta_time = 0.1
 
 running = True
+
 
 while running:
     for event in pygame.event.get():
@@ -80,7 +85,9 @@ while running:
     trainer.update(delta_time, gameboard)
 
     # Draw graphics
-    render_surface.fill((0, 0, 64))
+    background.update(delta_time)
+    background.draw(render_surface)
+
     tsuki.draw(render_surface)
     gameboard.draw(render_surface)
     yochan.draw(render_surface)
@@ -92,7 +99,7 @@ while running:
     # Scale and draw render_surface properly
     screen.fill((0, 0, 0))
     rect = get_scaled_rect(screen.get_size())
-    scaled_surface = pygame.transform.smoothscale(render_surface,
+    scaled_surface = pygame.transform.scale(render_surface,
                                                   (rect.width, rect.height))
     screen.blit(scaled_surface, rect.topleft)
 

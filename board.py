@@ -16,10 +16,15 @@ class Board(GameObject):
         self.gridx = (GameObject.WIDTH - self.gridsize)//2
         self.gridy = (GameObject.HEIGHT - self.gridsize)//2
         self.cellcount = GameObject.CELLCOUNT
-        self.cellsize = self.gridsize // (self.cellcount + 0.5)
-        self.celloffset = (self.gridsize - (self.cellsize * self.cellcount))//(self.cellcount+1)
+        self.cellsize = 80
+        self.leftoffset = 16
+        self.topoffset = 13.9
+        self.leftshift = 8
+        self.topshift = 6
         self.grid = [[None for _ in range(self.cellcount)]
                      for _ in range(self.cellcount)]
+
+        self.sprite = pygame.image.load("assets/gameboard.png").convert_alpha()
 
     def check_can_move(self, tocoords):
         """Checks if it's possible for a tile to move from from to to"""
@@ -33,10 +38,10 @@ class Board(GameObject):
 
     def get_pixel_coords(self, x, y):
         """Returns a tuple of the top left of a cell from the board coords"""
-        return (x * (self.cellsize + self.celloffset)
-                + self.gridx + self.celloffset,
-                y * (self.cellsize + self.celloffset)
-                + self.gridy + self.celloffset)
+        return (x * (self.cellsize + self.leftoffset)
+                + self.gridx + self.leftshift,
+                y * (self.cellsize + self.topoffset)
+                + self.gridy + self.topshift)
 
     def check_if_empty(self, x, y):
         """Checks if the cell is empty(really, viable)"""
@@ -59,9 +64,9 @@ class Board(GameObject):
         return 0 <= x < self.cellcount and 0 <= y < self.cellcount
 
     def move_in_grid(self, current, target):
-        print("Moving in grid")
-        print(f"\tCurrent: {current}")
-        print(f"\tTarget: {target}")
+        # print("Moving in grid")
+        # print(f"\tCurrent: {current}")
+        # print(f"\tTarget: {target}")
         cx, cy = current
         tx, ty = target
         # Gate out of bounds
@@ -121,27 +126,27 @@ class Board(GameObject):
         return
 
     def merge_tiles(self, task):
-        print("---Merging tiles---")
+        # print("---Merging tiles---")
         _, direction, current, other = task
-        print(f"\t{current} and {other}")
-        print(self)
+        # print(f"\t{current} and {other}")
+        # print(self)
         # Get the target move
         target = self.get_target_position(current, direction)
-        print(f"\tgoal: {target}")
+        # print(f"\tgoal: {target}")
         # Fix the logical board
-        # print(self.grid)
-        print(f"\tRemoving {other}")
+        # # print(self.grid)
+        # print(f"\tRemoving {other}")
         self.remove_from_grid(other)
-        print(self)
+        # print(self)
         self.move_in_grid((current.gridx, current.gridy), target)
-        print(self)
-        # print(self.grid)
+        # print(self)
+        # # print(self.grid)
         # Merge the current tile up to target cell, and manage ghost cell
-        print(f"\tPerforming merge up on {target}")
+        # print(f"\tPerforming merge up on {target}")
         current.merge_up(target, other, self)
         self.scorecard.score_tile(current)
-        print(self)
-        print("---Done merging---")
+        # print(self)
+        # print("---Done merging---")
 
     def push_from(self, direction, position):
         # Gate so that we only do this if all the tiles are still
@@ -150,7 +155,7 @@ class Board(GameObject):
                 if tile and not tile.check_is_idling():
                     return
 
-        print(f"Pushing {direction} from {position}")
+        # print(f"Pushing {direction} from {position}")
         tiles = self.get_affected_tiles(direction, position)
         skip = False
         plan = []
@@ -181,7 +186,7 @@ class Board(GameObject):
             for tile in row:
                 if tile and not tile.check_is_idling():
                     return
-        print(f"Pulling {direction} from {position}")
+        # print(f"Pulling {direction} from {position}")
         direction_map = {
                 Directions.UP: Directions.DOWN,
                 Directions.DOWN: Directions.UP,
@@ -191,7 +196,7 @@ class Board(GameObject):
         reverse_direction = direction_map[direction]
         tiles = self.get_affected_tiles(direction, position)
         tiles = list(reversed(tiles))
-        print(tiles)
+        # print(tiles)
 
         skip = False
         plan = []
@@ -207,7 +212,7 @@ class Board(GameObject):
             else:
                 plan.append(('move', reverse_direction, current, None))
 
-        print(plan)
+        # print(plan)
 
         for task in plan:
             if task[0] == 'move':
@@ -222,18 +227,10 @@ class Board(GameObject):
                     cell.update(delta)
 
     def draw(self, surface):
-        # Draw iceberg
-        pygame.draw.rect(surface, (200, 200, 255),
-                         (self.gridx, self.gridy,
-                          self.gridsize, self.gridsize))
+        scaled_board = pygame.transform.scale(self.sprite,
+                                              (self.gridsize, self.gridsize))
+        surface.blit(scaled_board, (self.gridx, self.gridy))
 
-        # Draw little outlines
-        for ridx, row in enumerate(self.grid):
-            for cidx, cell in enumerate(row):
-                cx, cy = self.get_pixel_coords(cidx, ridx)
-                pygame.draw.rect(surface, (230, 230, 255),
-                                 (cx, cy,
-                                  self.cellsize, self.cellsize))
         # Draw actual cells
         for ridx, row in enumerate(self.grid):
             for cidx, cell in enumerate(row):

@@ -44,7 +44,6 @@ class Tsuki(GameObject):
         for i in range(1, GameObject.CELLCOUNT):
             column_edges.append((0, i))
             column_edges.append((GameObject.CELLCOUNT-1, i))
-        print(column_edges)
         pouncable = []
         for cell in board.grid[0]:
             if cell and not isinstance(cell, YoChan):

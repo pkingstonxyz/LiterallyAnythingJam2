@@ -42,6 +42,8 @@ class Tile(GameObject):
         self.ghost_tile = None
 
     def check_is_idling(self):
+        idling = self.state == TileStates.STILL
+        if not idling: print(f"NOT IDLING: {self}")
         return self.state == TileStates.STILL
 
     def move_to(self, target, board):
@@ -174,7 +176,7 @@ class Tile(GameObject):
         # If there's a ghost tile, draw it under ourselves
         if self.ghost_tile:
             self.ghost_tile.draw(surface, board)
-        size = int((board.cellsize - 20) * self.scale)
+        size = int((board.cellsize) * self.scale)
         offset = (board.cellsize - size) // 2
         colors = {2:  (245, 252, 226, 255),
                   4:  (255, 249, 169, 255),
