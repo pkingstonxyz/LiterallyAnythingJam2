@@ -3,6 +3,7 @@
 
 class GameObject:
     __GameObjectID = 0
+    SCREEN_WIDTH = None
     WIDTH = None
     HEIGHT = None
     CELLCOUNT = 6

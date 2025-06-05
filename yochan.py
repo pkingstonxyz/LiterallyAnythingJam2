@@ -126,8 +126,24 @@ class YoChan(GameObject):
             self.gyu_elapsed = 0
 
         # Handle direction facing
+        mousex, mousey = [coord * (GameObject.WIDTH / GameObject.SCREEN_WIDTH)
+                          for coord in pygame.mouse.get_pos()]
+        centerx = self.pixelx + board.cellsize / 2
+        centery = self.pixely + board.cellsize / 2
+        dx, dy = mousex - centerx, mousey - centery
+
+        if abs(dx) > abs(dy):
+            self.facing = Directions.RIGHT if dx > 0 else Directions.LEFT
+        else:
+            self.facing = Directions.DOWN if dy > 0 else Directions.UP
+
+        scalefactor = GameObject.WIDTH / GameObject.SCREEN_WIDTH
         mousex, mousey = pygame.mouse.get_pos()
-        dx, dy = (mousex - self.pixelx, mousey - self.pixely)
+        mousex *= scalefactor
+        mousey *= scalefactor
+        centerx = self.pixelx + board.cellsize / 2
+        centery = self.pixely + board.cellsize / 2
+        dx, dy = (mousex - centerx, mousey - centery)
         if abs(dx) > abs(dy):
             self.facing = Directions.RIGHT if dx > 0 else Directions.LEFT
         else:
