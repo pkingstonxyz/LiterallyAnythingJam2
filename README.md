@@ -78,12 +78,12 @@ Can:
 
 ### Goal
 
-June 1: ideate, setup pygame
-June 2: yo-chan grid movement working
-June 3: ice block movement & merging
-June 4: trainer & gyu/nobite & Tsuki
-June 5: yo-chan art & animation system (sprites)
-June 6: tsuki-chan art/animation & fish art/animation
-June 7: Music & Sound Effects & Menu 
-June 8: Packaging & Submission
+ - [ ] June 1: ideate, setup pygame
+ - [ ] June 2: yo-chan grid movement working
+ - [ ] June 3: ice block movement & merging
+ - [ ] June 4: trainer & gyu/nobite & Tsuki
+ - [ ] June 5: yo-chan art & animation system (sprites)
+ - [ ] June 6: tsuki-chan art/animation & fish art/animation
+ - [ ] June 7: Music & Sound Effects & Menu 
+ - [ ] June 8: Packaging & Submission
 
