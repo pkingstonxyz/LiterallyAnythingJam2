@@ -1,5 +1,6 @@
 """Class for yo-chan"""
 from enum import Enum
+import math
 from directions import Directions
 import pygame
 from gameobject import GameObject
@@ -102,12 +103,7 @@ class YoChan(GameObject):
             dx, dy = target_dir.value
             tx, ty = self.gridx + dx, self.gridy + dy
 
-            if self.facing != target_dir:
-                # Turning available
-                self.next_direction = target_dir
-                self.time_elapsed = 0
-                self.state = YoStates.TURNING
-            elif board.check_can_move((tx, ty)):
+            if board.check_can_move((tx, ty)):
                 # Prepare to move
                 board.move_in_grid((self.gridx, self.gridy), (tx, ty))
                 self.gridx = tx
@@ -129,15 +125,16 @@ class YoChan(GameObject):
             self.state = YoStates.GYUING
             self.gyu_elapsed = 0
 
-        # HANDLE DEPENDING ON STATE
-        if self.state == YoStates.TURNING:
-            self.turn_elapsed += delta
-            if self.turn_elapsed > self.TURN_DURATION:
-                self.facing = self.next_direction
-                self.state = YoStates.IDLE
-                self.action = InputActions.NONE
+        # Handle direction facing
+        mousex, mousey = pygame.mouse.get_pos()
+        dx, dy = (mousex - self.pixelx, mousey - self.pixely)
+        if abs(dx) > abs(dy):
+            self.facing = Directions.RIGHT if dx > 0 else Directions.LEFT
+        else:
+            self.facing = Directions.DOWN if dy > 0 else Directions.UP
 
-        elif self.state == YoStates.MOVING:
+        # Handle states
+        if self.state == YoStates.MOVING:
             self.move_elapsed += delta
             progress = min(self.move_elapsed / self.MOVE_DURATION, 1.0)
             ox, oy = self.move_origin
