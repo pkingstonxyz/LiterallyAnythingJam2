@@ -10,6 +10,8 @@ from scorecard import ScoreCard
 
 from background import Background
 
+from menu import Menu
+
 pygame.init()
 
 WIDTH = 1024
@@ -55,11 +57,15 @@ yochan = YoChan(gameboard)
 tsuki = Tsuki()
 trainer = Trainer()
 
+menu = Menu()
+
 clock = pygame.time.Clock()
 delta_time = 0.1
 
 running = True
 
+
+playing = False
 
 while running:
     for event in pygame.event.get():
@@ -74,32 +80,44 @@ while running:
                 height = HEIGHT
             screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
             GameObject.SCREEN_WIDTH = width  # Set the universal tracker
-        yochan.handle_input(event)
+        elif event.type == pygame.KEYDOWN:
+            if event.key == pygame.K_ESCAPE:
+                playing = not playing
+        if playing:
+            yochan.handle_input(event)
+        else:
+            menu.handle_input(event)
 
-    # Logical updates here
-    timer.update(delta_time)
-    gameboard.update(delta_time)
-    tsuki.update(delta_time, gameboard)  # She can see the board
-    yochan.update(delta_time, gameboard)  # Her too
-    trainer.update(delta_time, gameboard)
-
-    # Draw graphics
     background.update(delta_time)
     background.draw(render_surface)
 
-    gameboard.draw(render_surface)
-    tsuki.draw(render_surface)
-    yochan.draw(render_surface)
+    if playing:
+        # Logical updates here
+        timer.update(delta_time)
+        gameboard.update(delta_time)
+        tsuki.update(delta_time, gameboard)  # She can see the board
+        yochan.update(delta_time, gameboard)  # Her too
+        trainer.update(delta_time, gameboard)
 
-    # Draw UI
-    scorecard.draw(render_surface)
-    timer.draw(render_surface)
+        # Draw graphics
+
+        gameboard.draw(render_surface)
+        tsuki.draw(render_surface)
+        yochan.draw(render_surface)
+
+        # Draw UI
+        scorecard.draw(render_surface)
+        timer.draw(render_surface)
+
+    else:
+        menu.update(delta_time)
+        menu.draw(render_surface)
 
     # Scale and draw render_surface properly
     screen.fill((0, 0, 0))
     rect = get_scaled_rect(screen.get_size())
     scaled_surface = pygame.transform.scale(render_surface,
-                                                  (rect.width, rect.height))
+                                            (rect.width, rect.height))
     screen.blit(scaled_surface, rect.topleft)
 
     pygame.display.flip()

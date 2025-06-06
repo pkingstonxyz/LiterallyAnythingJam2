@@ -73,8 +73,8 @@ Can:
  - [x] June 3: revamped ice block movement
  - [x] June 4: ice block merging, gyu, tsuki, trainer, timer, scoring
  - [x] June 5: Figured out animation, background art, board art, fish art
- - [x] June 6: Yo chan art & Tsuki art & Menu/UI
- - [ ] June 7: Menu, Sound effects, Music
+ - [x] June 6: Yo chan art & Tsuki art & Menu & Web build
+ - [ ] June 7:  Sound effects, Music, Win Screen
  - [ ] June 8: Packaging, Submission
 
 ### Goal
