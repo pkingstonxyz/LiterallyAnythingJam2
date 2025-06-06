@@ -149,14 +149,16 @@ class Board(GameObject):
         # print("---Done merging---")
 
     def push_from(self, direction, position):
-        # Gate so that we only do this if all the tiles are still
-        for row in self.grid:
-            for tile in row:
-                if tile and not tile.check_is_idling():
-                    return
 
-        # print(f"Pushing {direction} from {position}")
+        print(f"Pushing {direction} from {position}")
         tiles = self.get_affected_tiles(direction, position)
+
+        # Gate to only affected tiles
+        for tile in tiles:
+            if not tile.check_is_idling():
+                return
+
+        print(f"Affected tiles: {tiles}")
         skip = False
         plan = []
 
@@ -181,12 +183,7 @@ class Board(GameObject):
                 self.merge_tiles(task)
 
     def pull_from(self, direction, position):
-        # Gate so that we only do this if all the tiles are still
-        for row in self.grid:
-            for tile in row:
-                if tile and not tile.check_is_idling():
-                    return
-        # print(f"Pulling {direction} from {position}")
+        print(f"Pulling {direction} from {position}")
         direction_map = {
                 Directions.UP: Directions.DOWN,
                 Directions.DOWN: Directions.UP,
@@ -196,8 +193,13 @@ class Board(GameObject):
         reverse_direction = direction_map[direction]
         tiles = self.get_affected_tiles(direction, position)
         tiles = list(reversed(tiles))
-        # print(tiles)
 
+        print(f"Affected tiles: {tiles}")
+
+        # Gate to only affected tiles
+        for tile in tiles:
+            if not tile.check_is_idling():
+                return
         skip = False
         plan = []
 
@@ -212,7 +214,7 @@ class Board(GameObject):
             else:
                 plan.append(('move', reverse_direction, current, None))
 
-        # print(plan)
+        print(plan)
 
         for task in plan:
             if task[0] == 'move':

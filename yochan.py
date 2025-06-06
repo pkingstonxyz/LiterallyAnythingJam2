@@ -40,7 +40,7 @@ action_to_direction = {
 class YoChan(GameObject):
     TURN_DURATION = (0.0166)*3    # 3 frames
     MOVE_DURATION = (0.0166)*5    # 5 frames
-    NOBITE_DURATION = (0.0166)*5  # frames
+    NOBITE_DURATION = (0.0166)*3  # frames
     GYU_DURATION = NOBITE_DURATION
 
     def __init__(self, board):
@@ -173,7 +173,6 @@ class YoChan(GameObject):
         elif self.state == YoStates.GYUING:
             self.gyu_elapsed += delta
             progress = min(self.gyu_elapsed / self.GYU_DURATION, 1.0)
-
             if progress >= 1.0:
                 self.state = YoStates.IDLE
                 self.action = InputActions.NONE

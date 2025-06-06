@@ -71,7 +71,7 @@ Can:
  - [x] June 2: yo-chan grid movement working, ice block movement, nobite
  - [x] June 3: revamped ice block movement
  - [x] June 4: ice block merging, gyu, tsuki, trainer, timer, scoring
- - [ ] June 5:
+ - [ ] June 5: Figured out animation, background art, board art, fish art
  - [ ] June 6:
  - [ ] June 7:
  - [ ] June 8:

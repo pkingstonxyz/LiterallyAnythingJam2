@@ -41,9 +41,23 @@ class Tile(GameObject):
         self.merge_elapsed = 0
         self.ghost_tile = None
 
+        self.tile_images = {
+            2: pygame.image.load("assets/tiles/0000.png").convert_alpha(),
+            4: pygame.image.load("assets/tiles/0001.png").convert_alpha(),
+            8: pygame.image.load("assets/tiles/0002.png").convert_alpha(),
+            16: pygame.image.load("assets/tiles/0003.png").convert_alpha(),
+            32: pygame.image.load("assets/tiles/0004.png").convert_alpha(),
+            64: pygame.image.load("assets/tiles/0005.png").convert_alpha(),
+            128: pygame.image.load("assets/tiles/0006.png").convert_alpha(),
+            256: pygame.image.load("assets/tiles/0007.png").convert_alpha(),
+            512: pygame.image.load("assets/tiles/0008.png").convert_alpha(),
+            1024: pygame.image.load("assets/tiles/0009.png").convert_alpha(),
+            2048: pygame.image.load("assets/tiles/0010.png").convert_alpha(),
+            }
+
     def check_is_idling(self):
-        idling = self.state == TileStates.STILL
-        if not idling: print(f"NOT IDLING: {self}")
+        # idling = self.state == TileStates.STILL
+        # if not idling: print(f"NOT IDLING: {self}")
         return self.state == TileStates.STILL
 
     def move_to(self, target, board):
@@ -178,30 +192,34 @@ class Tile(GameObject):
             self.ghost_tile.draw(surface, board)
         size = int((board.cellsize) * self.scale)
         offset = (board.cellsize - size) // 2
-        colors = {2:  (245, 252, 226, 255),
-                  4:  (255, 249, 169, 255),
-                  8:  (255, 222, 117, 255),
-                  16: (255, 190,  94, 255),
-                  32: (255, 161, 107),
-                  64: (255, 134, 114),
-                  128: (255, 110, 150),
-                  256: (255, 108, 255),
-                  512: (196, 101, 255),
-                  1024: (123, 86, 255),
-                  2048: (0, 0, 0)}
+        # colors = {2:  (119, 136, 153),
+        #          4:  (192, 192, 192),
+        #          8:  (60, 179, 113),
+        #          16: (127, 255, 212),
+        #          32: (135, 206, 235),
+        #          64: (255, 127, 127),
+        #          128: (64, 224, 208),
+        #          256: (0, 139, 139),
+        #          512: (75, 0, 130),
+        #          1024: (148, 0, 211),
+        #          2048: (255, 20, 147)}
 
         # Draw the "target"
         if self.state == TileStates.ADDING:
-            pygame.draw.rect(surface, (50, 50, 50, 200),
+            pygame.draw.rect(surface, (50, 50, 50, 100),
                              (self.move_target[0] + 10,
                               self.move_target[1] + 10,
                               board.cellsize - 20,
                               board.cellsize - 20))
+        image = self.tile_images[self.value]
+        scaled_image = pygame.transform.scale(image, (size, size))
+        surface.blit(scaled_image, (self.pixelx + offset,
+                                    self.pixely + offset))
         # Draw the main tile
-        pygame.draw.rect(surface, colors[self.value],
-                         (self.pixelx + offset, self.pixely + offset,
-                          size,
-                          size))
+        # pygame.draw.rect(surface, colors[self.value],
+        #                 (self.pixelx + offset, self.pixely + offset,
+        #                  size,
+        #                  size))
 
     def __repr__(self):
         return f"({self.gridx},{self.gridy}):{self.value}"
