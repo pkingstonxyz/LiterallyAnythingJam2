@@ -41,6 +41,7 @@ def get_scaled_rect(window_size):
         y_offset = (win_height - scaled_height) // 2
         return pygame.Rect(0, y_offset, win_width, scaled_height)
 
+
 # Background
 background = Background()
 
@@ -73,8 +74,6 @@ while running:
                 height = HEIGHT
             screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
             GameObject.SCREEN_WIDTH = width  # Set the universal tracker
-        elif event.type == pygame.KEYDOWN:
-            pass
         yochan.handle_input(event)
 
     # Logical updates here

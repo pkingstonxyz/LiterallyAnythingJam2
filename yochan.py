@@ -36,6 +36,13 @@ action_to_direction = {
         InputActions.MOVE_DOWN: Directions.DOWN
         }
 
+direction_frame_jump_key = {
+        Directions.UP: 0,
+        Directions.RIGHT: 3,
+        Directions.DOWN: 6,
+        Directions.LEFT: 9
+        }
+
 
 class YoChan(GameObject):
     TURN_DURATION = (0.0166)*3    # 3 frames
@@ -59,25 +66,17 @@ class YoChan(GameObject):
         self.target_direction = Directions.LEFT
 
         self.nobite_elapsed = 0
+        self.nobite_frame = 0
 
         self.gyu_elapsed = 0
+        self.gyu_frame = 0
 
         self.cellsize = 0
         self.animations = {
-                YoStates.IDLE: {
-                    1: pygame.image.load("assets/yochan/0001.png").convert_alpha(),
-                    2: pygame.image.load("assets/yochan/0002.png").convert_alpha(),
-                    3: pygame.image.load("assets/yochan/0003.png").convert_alpha(),
-                    4: pygame.image.load("assets/yochan/0004.png").convert_alpha(),
-                    5: pygame.image.load("assets/yochan/0005.png").convert_alpha(),
-                    6: pygame.image.load("assets/yochan/0006.png").convert_alpha(),
-                    7: pygame.image.load("assets/yochan/0007.png").convert_alpha(),
-                    8: pygame.image.load("assets/yochan/0008.png").convert_alpha(),
-                    9: pygame.image.load("assets/yochan/0009.png").convert_alpha(),
-                    10: pygame.image.load("assets/yochan/0010.png").convert_alpha(),
-                    11: pygame.image.load("assets/yochan/0011.png").convert_alpha(),
-                    12: pygame.image.load("assets/yochan/0012.png").convert_alpha(),
-                    }
+                YoStates.IDLE: [pygame.image.load(f"assets/yochan/{i:04}.png").convert_alpha()
+                                for i in range(1, 12+1)],
+                YoStates.NOBITEING: [pygame.image.load(f"assets/yochan/{i:04}.png").convert_alpha() for i in range(14, 25+1)],
+                YoStates.GYUING: [pygame.image.load(f"assets/yochan/{i:04}.png").convert_alpha() for i in range(26, 37+1)],
                 }
 
     def check_is_idling(self):
@@ -86,8 +85,8 @@ class YoChan(GameObject):
     def handle_input(self, event):
         action = self.action
         # ONLY able to take an action when idling
-        if self.state != YoStates.IDLE:
-            return
+        #if self.state != YoStates.IDLE:
+        #    return
         leftkeys = (pygame.K_LEFT, pygame.K_a, pygame.K_h)
         rightkeys = (pygame.K_RIGHT, pygame.K_d, pygame.K_l)
         upkeys = (pygame.K_UP, pygame.K_w, pygame.K_k)
@@ -108,11 +107,10 @@ class YoChan(GameObject):
             elif event.key in gyukeys:
                 action = InputActions.GYU
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            left, _, right = pygame.mouse.get_pressed()
-            if left == 1:  # LEFT CLICK
+            if event.button == 1:  # LEFT CLICK
                 print("TRYING TO PUSH")
                 action = InputActions.NOBITE
-            elif right == 1:  # RIGHT CLICK
+            elif event.button == 3:  # RIGHT CLICK
                 action = InputActions.GYU
         self.action = action
 
@@ -138,7 +136,6 @@ class YoChan(GameObject):
                 self.state = YoStates.IDLE
                 self.action = InputActions.NONE
         elif self.state == YoStates.IDLE and self.action == InputActions.NOBITE:
-            print("I WANT TO PUSH")
             board.push_from(self.facing, (self.gridx, self.gridy))
             self.state = YoStates.NOBITEING
             self.nobite_elapsed = 0
@@ -193,7 +190,8 @@ class YoChan(GameObject):
         elif self.state == YoStates.NOBITEING:
             self.nobite_elapsed += delta
             progress = min(self.nobite_elapsed / self.NOBITE_DURATION, 1.0)
-            # PUT SPRITE INTERPOLATION STUFF HERE?
+            frame_progress = round(progress * (3 - 1))
+            self.nobite_frame = frame_progress + direction_frame_jump_key[self.facing]
             if progress >= 1.0:
                 self.state = YoStates.IDLE
                 self.action = InputActions.NONE
@@ -201,6 +199,8 @@ class YoChan(GameObject):
         elif self.state == YoStates.GYUING:
             self.gyu_elapsed += delta
             progress = min(self.gyu_elapsed / self.GYU_DURATION, 1.0)
+            frame_progress = round(progress * (3 - 1))
+            self.gyu_frame = frame_progress + direction_frame_jump_key[self.facing]
             if progress >= 1.0:
                 self.state = YoStates.IDLE
                 self.action = InputActions.NONE
@@ -219,9 +219,15 @@ class YoChan(GameObject):
         toplefty -= size/5
         if self.state == YoStates.IDLE or self.state == YoStates.MOVING:
             images = self.animations[YoStates.IDLE]
-            image = images[self.angle_direction + 1]
-            scaled_image = pygame.transform.scale(image, (size, size))
-            surface.blit(scaled_image, (topleftx, toplefty))
+            image = images[self.angle_direction]
+        if self.state == YoStates.NOBITEING:
+            images = self.animations[YoStates.NOBITEING]
+            image = images[self.nobite_frame]
+        if self.state == YoStates.GYUING:
+            images = self.animations[YoStates.GYUING]
+            image = images[self.gyu_frame]
+        scaled_image = pygame.transform.scale(image, (size, size))
+        surface.blit(scaled_image, (topleftx, toplefty))
 
     def __repr__(self):
         return "yo"
