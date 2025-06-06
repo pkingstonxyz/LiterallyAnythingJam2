@@ -192,17 +192,6 @@ class Tile(GameObject):
             self.ghost_tile.draw(surface, board)
         size = int((board.cellsize) * self.scale)
         offset = (board.cellsize - size) // 2
-        # colors = {2:  (119, 136, 153),
-        #          4:  (192, 192, 192),
-        #          8:  (60, 179, 113),
-        #          16: (127, 255, 212),
-        #          32: (135, 206, 235),
-        #          64: (255, 127, 127),
-        #          128: (64, 224, 208),
-        #          256: (0, 139, 139),
-        #          512: (75, 0, 130),
-        #          1024: (148, 0, 211),
-        #          2048: (255, 20, 147)}
 
         # Draw the "target"
         if self.state == TileStates.ADDING:
