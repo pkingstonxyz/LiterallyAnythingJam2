@@ -52,6 +52,7 @@ class YoChan(GameObject):
 
         self.state = YoStates.NOBITEING
         self.facing = Directions.LEFT
+        self.angle_direction = 0
         self.action = InputActions.NONE
 
         self.turn_elapsed = 0  # in ms
@@ -60,6 +61,24 @@ class YoChan(GameObject):
         self.nobite_elapsed = 0
 
         self.gyu_elapsed = 0
+
+        self.cellsize = 0
+        self.animations = {
+                YoStates.IDLE: {
+                    1: pygame.image.load("assets/yochan/0001.png").convert_alpha(),
+                    2: pygame.image.load("assets/yochan/0002.png").convert_alpha(),
+                    3: pygame.image.load("assets/yochan/0003.png").convert_alpha(),
+                    4: pygame.image.load("assets/yochan/0004.png").convert_alpha(),
+                    5: pygame.image.load("assets/yochan/0005.png").convert_alpha(),
+                    6: pygame.image.load("assets/yochan/0006.png").convert_alpha(),
+                    7: pygame.image.load("assets/yochan/0007.png").convert_alpha(),
+                    8: pygame.image.load("assets/yochan/0008.png").convert_alpha(),
+                    9: pygame.image.load("assets/yochan/0009.png").convert_alpha(),
+                    10: pygame.image.load("assets/yochan/0010.png").convert_alpha(),
+                    11: pygame.image.load("assets/yochan/0011.png").convert_alpha(),
+                    12: pygame.image.load("assets/yochan/0012.png").convert_alpha(),
+                    }
+                }
 
     def check_is_idling(self):
         return self.state == YoStates.IDLE
@@ -89,9 +108,11 @@ class YoChan(GameObject):
             elif event.key in gyukeys:
                 action = InputActions.GYU
         elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:  # LEFT CLICK
+            left, _, right = pygame.mouse.get_pressed()
+            if left == 1:  # LEFT CLICK
+                print("TRYING TO PUSH")
                 action = InputActions.NOBITE
-            elif event.button == 3:  # RIGHT CLICK
+            elif right == 1:  # RIGHT CLICK
                 action = InputActions.GYU
         self.action = action
 
@@ -117,6 +138,7 @@ class YoChan(GameObject):
                 self.state = YoStates.IDLE
                 self.action = InputActions.NONE
         elif self.state == YoStates.IDLE and self.action == InputActions.NOBITE:
+            print("I WANT TO PUSH")
             board.push_from(self.facing, (self.gridx, self.gridy))
             self.state = YoStates.NOBITEING
             self.nobite_elapsed = 0
@@ -136,6 +158,12 @@ class YoChan(GameObject):
             self.facing = Directions.RIGHT if dx > 0 else Directions.LEFT
         else:
             self.facing = Directions.DOWN if dy > 0 else Directions.UP
+
+        angle_rad = math.atan2(dx, -dy)  # Swap dx and dy so that <0,1> is up
+        angle_deg = math.degrees(angle_rad) % 360
+        clock_pos = round(angle_deg / 30) % 12
+        self.angle_direction = clock_pos
+        self.cellsize = board.cellsize
 
         scalefactor = GameObject.WIDTH / GameObject.SCREEN_WIDTH
         mousex, mousey = pygame.mouse.get_pos()
@@ -178,12 +206,22 @@ class YoChan(GameObject):
                 self.action = InputActions.NONE
 
     def draw(self, surface):
-        pygame.draw.rect(surface, (0, 255, 0),
-                         (self.pixelx, self.pixely, 50, 50))
-        pygame.draw.rect(surface, (0, 0, 0),
-                         (self.pixelx + (self.facing.value[0] * 20) + 25,
-                          self.pixely + (self.facing.value[1] * 20) + 25,
-                          5, 5))
+        # pygame.draw.rect(surface, (0, 255, 0),
+        #                 (self.pixelx, self.pixely, 50, 50))
+        # pygame.draw.rect(surface, (0, 0, 0),
+        #                 (self.pixelx + (self.facing.value[0] * 20) + 25,
+        #                  self.pixely + (self.facing.value[1] * 20) + 25,
+        #                  5, 5))
+        topleftx = self.pixelx
+        toplefty = self.pixely
+        size = self.cellsize * 1.4
+        topleftx -= size/7
+        toplefty -= size/5
+        if self.state == YoStates.IDLE or self.state == YoStates.MOVING:
+            images = self.animations[YoStates.IDLE]
+            image = images[self.angle_direction + 1]
+            scaled_image = pygame.transform.scale(image, (size, size))
+            surface.blit(scaled_image, (topleftx, toplefty))
 
     def __repr__(self):
         return "yo"
