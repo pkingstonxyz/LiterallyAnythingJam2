@@ -16,7 +16,7 @@ class TsukiStates(Enum):
 class Tsuki(GameObject):
     MIN_CAN_POUNCE = 3
     MAX_CAN_POUNCE = 5
-    POUNCE_DURATION = 0.5
+    POUNCE_DURATION = (0.0166) * 30  # 30 frames
 
     def __init__(self):
         self.facing = None
@@ -35,6 +35,35 @@ class Tsuki(GameObject):
         self.pouncing_square = None
         self.original_pounce_x = None
         self.original_pounce_y = None
+
+        self.pounce_frame = 0
+
+        self.cellsize = 0
+        self.animation_frames = {
+                Directions.UP:
+                [pygame.transform.flip(
+                    pygame.image.load(f"assets/tsukianimation/{i:04}.png")
+                    .convert_alpha(),
+                    False, True)
+                 for i in range(1, 31)],
+                Directions.DOWN:
+                [pygame.image.load(f"assets/tsukianimation/{i:04}.png")
+                    .convert_alpha()
+                 for i in range(1, 31)],
+                Directions.LEFT:
+                [pygame.transform.flip(
+                    pygame.image.load(f"assets/tsukianimation/{i:04}.png")
+                    .convert_alpha(),
+                    True, False)
+                 for i in range(31, 61)],
+                Directions.RIGHT:
+                [pygame.image.load(f"assets/tsukianimation/{i:04}.png")
+                    .convert_alpha()
+                 for i in range(31, 61)],
+                }
+        for direction in list(Directions):
+            for frame in self.animation_frames[direction]:
+                frame.set_colorkey((0, 0, 0))
 
     def new_pounce_threshold(self):
         return random.uniform(Tsuki.MIN_CAN_POUNCE, Tsuki.MAX_CAN_POUNCE)
@@ -61,6 +90,7 @@ class Tsuki(GameObject):
         board.remove_from_grid(tile)
 
     def update(self, delta, board):
+        self.cellsize = board.cellsize
         self.time_since_pounce += delta
         if self.time_since_pounce >= self.pounce_threshold:
             # Reset the pounce threshold and pounce timer
@@ -97,6 +127,7 @@ class Tsuki(GameObject):
 
         if self.state == TsukiStates.POUNCING:
             self.pounce_duration += delta
+            self.pounce_frame = int(30 * self.pounce_duration)
             if self.pounce_duration >= 1.0:
                 # Only pounce when tile is still there
                 if (self.pouncing_square.gridx, self.pouncing_square.gridy) ==\
@@ -109,9 +140,12 @@ class Tsuki(GameObject):
         if self.state == TsukiStates.IDLE:
             return
 
-        pygame.draw.rect(surface, (255, 0, 0),
-                         (self.pixelx, self.pixely, 50, 50))
-        pygame.draw.rect(surface, (0, 0, 0),
-                         (self.pixelx + (self.facing.value[0]*20) + 25,
-                          self.pixely + (self.facing.value[1]*20) + 25,
-                          5, 5))
+        size = self.cellsize * 1.5
+        directionmap = {Directions.UP: (-0.15*size, -0.3*size),
+                        Directions.RIGHT: (0*size, -0.15*size),
+                        Directions.DOWN: (-0.15*size, 0),
+                        Directions.LEFT: (-0.3*size, -0.18*size)}
+        offsetx, offsety = directionmap[self.facing]
+        image = self.animation_frames[self.facing][self.pounce_frame]
+        scaled_image = pygame.transform.scale(image, (size, size))
+        surface.blit(scaled_image, (self.pixelx+offsetx, self.pixely+offsety))

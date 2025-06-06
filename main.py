@@ -87,8 +87,8 @@ while running:
     background.update(delta_time)
     background.draw(render_surface)
 
-    tsuki.draw(render_surface)
     gameboard.draw(render_surface)
+    tsuki.draw(render_surface)
     yochan.draw(render_surface)
 
     # Draw UI
