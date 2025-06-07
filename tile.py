@@ -19,6 +19,8 @@ class Tile(GameObject):
 
     ODDS_OF_FOUR = 0.5
 
+    SOUND = None
+
     def __init__(self, x, y, board):
         self.gridx = x
         self.gridy = y
@@ -54,6 +56,9 @@ class Tile(GameObject):
             1024: pygame.image.load("assets/tiles/0009.png").convert_alpha(),
             2048: pygame.image.load("assets/tiles/0010.png").convert_alpha(),
             }
+
+        if not Tile.SOUND:
+            Tile.SOUND = pygame.mixer.Sound("assets/chime.wav")
 
     def check_is_idling(self):
         # idling = self.state == TileStates.STILL
@@ -114,6 +119,8 @@ class Tile(GameObject):
         other.move_target = board.get_pixel_coords(tx, ty)
         other.move_elapsed = 0
         other.move_duration = (Tile.BASE_MOVE_DURATION/5) * otherdistance
+
+        Tile.SOUND.play(maxtime=1000)
 
     def can_merge(self, other):
         return other and self.value == other.value

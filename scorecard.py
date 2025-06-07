@@ -5,7 +5,7 @@ from gameobject import GameObject
 class ScoreCard(GameObject):
     def __init__(self):
         self.score = 0
-        self.font = pygame.font.Font(None, size=50)
+        self.font = pygame.font.Font("assets/FiraCode-Regular.ttf", size=50)
 
     def score_tile(self, tile):
         self.score += tile.value

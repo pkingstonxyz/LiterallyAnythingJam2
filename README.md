@@ -74,8 +74,8 @@ Can:
  - [x] June 4: ice block merging, gyu, tsuki, trainer, timer, scoring
  - [x] June 5: Figured out animation, background art, board art, fish art
  - [x] June 6: Yo chan art & Tsuki art & Menu & Web build
- - [ ] June 7:  Sound effects, Music, Win Screen
- - [ ] June 8: Packaging, Submission
+ - [x] June 7: Sound effects, Submission
+ - [ ] June 8: Church lol
 
 ### Goal
 
@@ -88,3 +88,10 @@ Can:
  - June 7: Music & Sound Effects & Menu 
  - June 8: Packaging & Submission
 
+## Reflections:
+
+It was a fun process, but very draining! I'm writing this on June 7th and the
+game is at a state where I think I'm ready to submit it. For my broader goal
+of creating 2048 inspired games, I have made a tremendous accomplishment. This
+game has complete and in tact, a board, tiles, merging, and the logic to plan
+and dispatch moves. Incredibly useful. Would jam again!
