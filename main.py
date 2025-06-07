@@ -1,4 +1,5 @@
 import pygame
+import asyncio
 
 from gameobject import GameObject
 from board import Board
@@ -62,66 +63,73 @@ menu = Menu()
 clock = pygame.time.Clock()
 delta_time = 0.1
 
-running = True
 
+async def main():
+    global delta_time, clock, menu, trainer, tsuki, yochan, gameboard, \
+            scorecard, timer, background, WIDTH, HEIGHT, ASPECT, screen, \
+            render_surface
 
-playing = False
+    running = True
 
-while running:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.VIDEORESIZE:
-            # Make window resiable
-            width, height = event.size
-            if width < WIDTH:
-                width = WIDTH
-            if height < HEIGHT:
-                height = HEIGHT
-            screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
-            GameObject.SCREEN_WIDTH = width  # Set the universal tracker
-        elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_ESCAPE:
-                playing = not playing
+    playing = False
+    while running:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                running = False
+            elif event.type == pygame.VIDEORESIZE:
+                # Make window resiable
+                width, height = event.size
+                if width < WIDTH:
+                    width = WIDTH
+                if height < HEIGHT:
+                    height = HEIGHT
+                screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
+                GameObject.SCREEN_WIDTH = width  # Set the universal tracker
+            elif event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_ESCAPE:
+                    playing = not playing
+            if playing:
+                yochan.handle_input(event)
+            else:
+                menu.handle_input(event)
+
+        background.update(delta_time)
+        background.draw(render_surface)
+
         if playing:
-            yochan.handle_input(event)
+            # Logical updates here
+            timer.update(delta_time)
+            gameboard.update(delta_time)
+            tsuki.update(delta_time, gameboard)  # She can see the board
+            yochan.update(delta_time, gameboard)  # Her too
+            trainer.update(delta_time, gameboard)
+
+            # Draw graphics
+
+            gameboard.draw(render_surface)
+            tsuki.draw(render_surface)
+            yochan.draw(render_surface)
+
+            # Draw UI
+            scorecard.draw(render_surface)
+            timer.draw(render_surface)
+
         else:
-            menu.handle_input(event)
+            menu.update(delta_time)
+            menu.draw(render_surface)
 
-    background.update(delta_time)
-    background.draw(render_surface)
+        # Scale and draw render_surface properly
+        screen.fill((0, 0, 0))
+        rect = get_scaled_rect(screen.get_size())
+        scaled_surface = pygame.transform.scale(render_surface,
+                                                (rect.width, rect.height))
+        screen.blit(scaled_surface, rect.topleft)
 
-    if playing:
-        # Logical updates here
-        timer.update(delta_time)
-        gameboard.update(delta_time)
-        tsuki.update(delta_time, gameboard)  # She can see the board
-        yochan.update(delta_time, gameboard)  # Her too
-        trainer.update(delta_time, gameboard)
+        pygame.display.flip()
+        delta_time = clock.tick(60) / 1000  # Milliseconds
+        delta_time = max(0.001, min(0.1, delta_time))
+        await asyncio.sleep(0)
 
-        # Draw graphics
+    # pygame.quit()
 
-        gameboard.draw(render_surface)
-        tsuki.draw(render_surface)
-        yochan.draw(render_surface)
-
-        # Draw UI
-        scorecard.draw(render_surface)
-        timer.draw(render_surface)
-
-    else:
-        menu.update(delta_time)
-        menu.draw(render_surface)
-
-    # Scale and draw render_surface properly
-    screen.fill((0, 0, 0))
-    rect = get_scaled_rect(screen.get_size())
-    scaled_surface = pygame.transform.scale(render_surface,
-                                            (rect.width, rect.height))
-    screen.blit(scaled_surface, rect.topleft)
-
-    pygame.display.flip()
-    delta_time = clock.tick(60) / 1000  # Milliseconds
-    delta_time = max(0.001, min(0.1, delta_time))
-
-pygame.quit()
+asyncio.run(main())
